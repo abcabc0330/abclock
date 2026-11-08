@@ -140,3 +140,21 @@ GPL-3.0，见 [LICENSE](LICENSE)。
 ```sh
 printf 'wrong\n' | pamtester gtklock "$USER" authenticate   # 应失败
 ```
+
+## 重试次数与锁定策略
+
+锁屏栈只有 `pam_unix`，**没有 `pam_faillock`**，所以输错密码不限次数、没有递增延迟、也不会把账号锁住；
+唯一的后果是内部写一行 `Login failed`（默认样式里被 `opacity: 0` 藏掉了，屏幕上看不出任何变化）。
+
+需要限制时，在 `/etc/pam.d/gtklock` 里显式加 faillock（并在 `/etc/security/faillock.conf` 设 `deny=` / `unlock_time=`）：
+
+```
+auth      required    pam_faillock.so preauth
+auth      required    pam_unix.so
+auth      [default=die] pam_faillock.so authfail
+account   required    pam_faillock.so
+account   required    pam_unix.so
+```
+
+注意这会把锁屏和 `sudo`/`login` 之外的第三种计数引入：`sudo`/`login` 走 `system-auth`，默认 `deny=3, unlock_time=600s`，
+超限后**正确的密码也会被拒**；锁屏的失败不计入 `system-auth` 的计数，反之亦然。
