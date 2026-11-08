@@ -57,7 +57,7 @@ PAM 服务名在源码里写死为 `gtklock`，因此 `/etc/pam.d/gtklock` 必�
 yay -S abclock        # 或 paru -S abclock
 ```
 
-包把后端装到 `/usr/libexec/abclock/gtklock-bin`、包装器装到 `/usr/bin/gtklock`、布局装到 `/usr/share/abclock/layout.xml`，并 `provides=('gtklock') conflicts=('gtklock')` —— 它会取代发行版的 gtklock（`/etc/pam.d/gtklock` 由本包提供）。
+包把后端装到 `/usr/libexec/abclock/gtklock-bin`、包装器装到 `/usr/bin/gtklock`（另有 `/usr/bin/abclock` 同名别名）、布局装到 `/usr/share/abclock/layout.xml`，并 `provides=('gtklock') conflicts=('gtklock')` —— 它会取代发行版的 gtklock（`/etc/pam.d/gtklock` 由本包提供）。
 
 ### 脚本（用户级，不碰系统）
 
