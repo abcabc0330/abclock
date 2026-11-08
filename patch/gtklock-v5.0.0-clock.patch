@@ -1,0 +1,76 @@
+diff --git a/src/gtklock.c b/src/gtklock.c
+index 5e2fc15..452b897 100644
+--- a/src/gtklock.c
++++ b/src/gtklock.c
+@@ -31,11 +31,52 @@ void gtklock_focus_window(struct GtkLock *gtklock, struct Window* win) {
+ 	module_on_focus_change(gtklock, win, old);
+ }
+ 
++// g_date_time_format() resolves %a/%A through LC_TIME, so under zh_CN both are
++// Chinese. "%ea" (upper-case English weekday abbreviation) is spliced in here
++// around segments handed to g_date_time_format().
++static gchar *format_datetime_custom(GDateTime *time, const gchar *format) {
++	static const gchar *weekday_en[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
++	GString *out = g_string_new(NULL);
++	GString *segment = g_string_new(NULL);
++	const gchar *p = format;
++
++	#define FLUSH_SEGMENT() \
++		do { \
++			if(segment->len > 0) { \
++				gchar *formatted = g_date_time_format(time, segment->str); \
++				if(formatted != NULL) { \
++					g_string_append(out, formatted); \
++					g_free(formatted); \
++				} \
++				g_string_truncate(segment, 0); \
++			} \
++		} while(0)
++
++	while(*p != '\0') {
++		if(g_str_has_prefix(p, "%%")) {
++			g_string_append(segment, "%%");
++			p += 2;
++		} else if(g_str_has_prefix(p, "%ea")) {
++			FLUSH_SEGMENT();
++			g_string_append(out, weekday_en[g_date_time_get_day_of_week(time) % 7]);
++			p += 3;
++		} else {
++			g_string_append_c(segment, *p);
++			p++;
++		}
++	}
++	FLUSH_SEGMENT();
++	#undef FLUSH_SEGMENT
++
++	g_string_free(segment, TRUE);
++	return g_string_free(out, FALSE);
++}
++
+ void gtklock_update_clocks(struct GtkLock *gtklock) {
+ 	GDateTime *time = g_date_time_new_now_local();
+ 	if(time == NULL) return;
+ 	if(gtklock->time) g_free(gtklock->time);
+-	gtklock->time = g_date_time_format(time, gtklock->time_format ? gtklock->time_format : "%R");
++	gtklock->time = format_datetime_custom(time, gtklock->time_format ? gtklock->time_format : "%R");
+ 	g_date_time_unref(time);
+ 
+ 	for(guint idx = 0; idx < gtklock->windows->len; idx++) {
+@@ -48,7 +89,7 @@ void gtklock_update_dates(struct GtkLock *gtklock) {
+ 	GDateTime *date = g_date_time_new_now_local();
+ 	if(date == NULL) return;
+ 	if(gtklock->date) g_free(gtklock->date);
+-	gtklock->date = g_date_time_format(date, gtklock->date_format ? gtklock->date_format : "%a, %b %d");
++	gtklock->date = format_datetime_custom(date, gtklock->date_format ? gtklock->date_format : "%a, %b %d");
+ 	g_date_time_unref(date);
+ 
+ 	for(guint idx = 0; idx < gtklock->windows->len; idx++) {
+@@ -144,7 +185,7 @@ void gtklock_activate(struct GtkLock *gtklock) {
+ 	gtk_session_lock_lock_lock(gtklock->lock);
+ 
+ 
+-	gtklock->draw_time_source = g_timeout_add(1000, G_SOURCE_FUNC(update_time_handler), gtklock);
++	gtklock->draw_time_source = g_timeout_add(100, G_SOURCE_FUNC(update_time_handler), gtklock);
+ 	gtklock_update_clocks(gtklock);
+ 	gtklock_update_dates(gtklock);
+ 	if(gtklock->use_idle_hide || gtklock->idle_command) gtklock->idle_hide_source =

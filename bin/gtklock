@@ -1,0 +1,27 @@
+#!/bin/sh
+# abclock —— gtklock 的统一锁屏入口。
+#
+#   gtklock（终端 / swaymsg exec / swayidle / 键盘绑定）一律经过这里，因此
+#   时区、LC_TIME 与三行布局不依赖调用方的环境变量。
+#
+# 可用环境变量覆盖：
+#   ABCLOCK_TZ        时区（默认 Asia/Shanghai）
+#   ABCLOCK_LC_TIME   日期语言（默认 zh_CN.utf8，用于 %A 得到「星期一」）
+#   ABCLOCK_LAYOUT    layout.xml 路径（默认 ~/.config/gtklock/layout.xml）
+#   ABCLOCK_BIN       后端二进制（默认 <prefix>/libexec/abclock/gtklock-bin）
+set -e
+
+self=$(readlink -f "$0")
+prefix=$(CDPATH= cd -- "$(dirname -- "$(dirname -- "$self")")" && pwd)
+
+bin="$prefix/libexec/abclock/gtklock-bin"
+[ -x "$bin" ] || bin="${ABCLOCK_BIN:-/usr/local/libexec/abclock/gtklock-bin}"
+
+export TZ="${ABCLOCK_TZ:-Asia/Shanghai}"
+export LC_TIME="${ABCLOCK_LC_TIME:-zh_CN.utf8}"
+
+layout="${ABCLOCK_LAYOUT:-${XDG_CONFIG_HOME:-$HOME/.config}/gtklock/layout.xml}"
+if [ -f "$layout" ]; then
+	exec "$bin" -x "$layout" "$@"
+fi
+exec "$bin" "$@"

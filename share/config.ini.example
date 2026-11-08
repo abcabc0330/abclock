@@ -1,0 +1,11 @@
+; abclock 示例配置，把需要的段落合并进 ~/.config/gtklock/config.ini
+[main]
+; 背景图：换成你自己的图片
+background=/usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png
+; 时间只到秒；时区由包装器 export TZ 决定，不要写死在本文件里
+time-format=%H:%M:%S
+; %ea = 英文星期缩写（Mon），%A = 中文星期（星期一），由 LC_TIME=zh_CN.utf8 生效
+date-format=%Y-%m-%d %ea %A
+gtk-theme=Adwaita-dark
+; 字体大小/阴影等写在这里
+style=/home/你的用户名/.config/gtklock/style.css

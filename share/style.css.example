@@ -1,0 +1,26 @@
+/* abclock 示例样式：只放锁屏时钟/日期的排版，背景由 config.ini 的 background 决定 */
+window {
+	background-color: #101018;
+	background-size: cover;
+	background-position: center;
+}
+
+#clock-label {
+	font-size: 128pt;
+	font-weight: 700;
+	color: #ffffff;
+	text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+}
+
+#date-label {
+	font-size: 34pt;
+	font-weight: 700;
+	color: #ffffff;
+	margin-top: -8px;
+	text-shadow: 0 3px 16px rgba(0, 0, 0, 0.55);
+}
+
+#input-field {
+	background-color: rgba(20, 20, 30, 0.65);
+	color: #ffffff;
+}
