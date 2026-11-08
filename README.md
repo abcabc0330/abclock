@@ -28,10 +28,12 @@ gtklock 5.0.0 的锁屏小补丁 + 统一入口包装器：**北京时间、三�
 ```sh
 export TZ=Asia/Shanghai
 export LC_TIME=zh_CN.utf8
-exec .../gtklock-bin -x ~/.config/gtklock/layout.xml "$@"
+exec .../gtklock-bin -x <layout.xml> "$@"
 ```
 
 因此 `$mod+Escape`、`swayidle`、`swaymsg exec gtklock`、终端里直接敲 `gtklock`、乃至 bash 哈希缓存里存着的 `/usr/bin/gtklock`，都会落到同一个入口。可用 `ABCLOCK_TZ` / `ABCLOCK_LC_TIME` / `ABCLOCK_LAYOUT` / `ABCLOCK_BIN` 覆盖。
+
+布局优先用 `~/.config/gtklock/layout.xml`，没有则回退到系统共享的 `/usr/share/abclock/layout.xml`（AUR 包安装的是后者）。
 
 `share/layout.xml` 在默认布局外只增加一个空行标签，使时间落在第 2 行、日期第 3 行；上游所有控件 id（`clock-label`、`date-label`、`input-field`、`unlock-button`、`message-revealer` 等）与信号原样保留。
 
@@ -48,6 +50,16 @@ sudo pacman -S --needed gtk3 gtk-session-lock pam meson ninja git
 PAM 服务名在源码里写死为 `gtklock`，因此 `/etc/pam.d/gtklock` 必须存在（发行版装 gtklock 包即会提供）。
 
 ## 安装
+
+### AUR（推荐，系统级）
+
+```sh
+yay -S abclock        # 或 paru -S abclock
+```
+
+包把后端装到 `/usr/libexec/abclock/gtklock-bin`、包装器装到 `/usr/bin/gtklock`、布局装到 `/usr/share/abclock/layout.xml`，并 `provides=('gtklock') conflicts=('gtklock')` —— 它会取代发行版的 gtklock（`/etc/pam.d/gtklock` 由本包提供）。
+
+### 脚本（用户级，不碰系统）
 
 ```sh
 git clone https://github.com/abcabc0330/abclock
