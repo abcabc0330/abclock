@@ -121,3 +121,10 @@ pkill -USR1 -x gtklock          # gtklock 的解锁信号，回到会话
 ## License
 
 GPL-3.0，见 [LICENSE](LICENSE)。
+
+## 隐形密码框（看不到输入、回车即校验）
+
+`style.css.example` 默认把输入框、`Password:` 标签、`Unlock` 按钮和提示条设成 `opacity: 0`；
+控件仍然存在并可聚焦，所以直接打字 + 回车照常走 PAM 校验，屏幕上不会显示任何字符或提示。
+
+不需要这个行为时，删掉样式末尾那段 `opacity: 0` 规则即可。

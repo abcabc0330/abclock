@@ -24,3 +24,12 @@ window {
 	background-color: rgba(20, 20, 30, 0.65);
 	color: #ffffff;
 }
+/* 隐形密码区：控件仍在、仍可聚焦、回车仍校验，只是不可见 */
+#input-field,
+#input-label,
+#unlock-button,
+#warning-label,
+#error-label,
+infobar {
+    opacity: 0;
+}
