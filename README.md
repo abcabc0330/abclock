@@ -128,3 +128,15 @@ GPL-3.0，见 [LICENSE](LICENSE)。
 控件仍然存在并可聚焦，所以直接打字 + 回车照常走 PAM 校验，屏幕上不会显示任何字符或提示。
 
 不需要这个行为时，删掉样式末尾那段 `opacity: 0` 规则即可。
+
+## 密码校验
+
+包会把 `/etc/pam.d/gtklock` 覆盖成独立严格栈（`auth required pam_unix.so`），
+不再 `include login`。原因：本机 `system-auth` 里 `pam_unix` 失败后有一条
+`auth optional pam_permit.so` 兜底，`include` 会让锁屏接受**任意密码**。
+
+自检：
+
+```sh
+printf 'wrong\n' | pamtester gtklock "$USER" authenticate   # 应失败
+```

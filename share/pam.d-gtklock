@@ -1,0 +1,5 @@
+# abclock 的 PAM 栈：独立严格校验。
+# 不要改成 include login / system-auth——那些栈里的 `auth optional pam_permit.so`
+# 会在 pam_unix 失败后兜底成功，导致“任意密码（含空密码）都能解锁”。
+auth      required    pam_unix.so
+account   required    pam_unix.so
