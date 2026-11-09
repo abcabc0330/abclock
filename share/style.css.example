@@ -6,14 +6,14 @@ window {
 }
 
 #clock-label {
-	font-size: 216pt;
+	font-size: 288pt;
 	font-weight: 700;
 	color: #ffffff;
 	text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
 }
 
 #date-label {
-	font-size: 54pt;
+	font-size: 104pt;
 	font-weight: 700;
 	color: #ffffff;
 	margin-top: -8px;
