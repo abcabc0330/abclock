@@ -13,7 +13,7 @@ window {
 }
 
 #date-label {
-	font-size: 104pt;
+	font-size: 80pt;
 	font-weight: 700;
 	color: #ffffff;
 	margin-top: -8px;
